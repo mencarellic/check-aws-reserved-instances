@@ -18,17 +18,23 @@ parser.add_argument("--aws-access-key", type=str, default=None,
 parser.add_argument("--aws-secret-key", type=str, default=None,
                     help="AWS Secret Access Key. Defaults to the value of the "
                          "AWS_SECRET_ACCESS_KEY environment variable (if set)")
-parser.add_argument("--region", type=str, default="cn-north-1",
-                    help="AWS Region name. Default is 'cn-north-1'")
+parser.add_argument("-p", "--profile-name", type=str, default="default",
+                    help="AWS Profile name. Default is 'default'")
+parser.add_argument("--region", type=str, default="us-east-1",
+                    help="AWS Region name. Default is 'us-east-1'")
 parser.add_argument("-w", "--warn-time", type=int, default=30,
                     help="Expire period for reserved instances in days. "
                          "Default is '30 days'")
 args = parser.parse_args()
 REGION = args.region + ' (Region)'
 
-session = boto3.session.Session(region_name=args.region,
-                                aws_access_key_id=args.aws_access_key,
-                                aws_secret_access_key=args.aws_secret_key)
+if args.profile_name:
+    session = boto3.session.Session(region_name=args.region,
+                                    profile_name=args.profile_name)
+else:
+    session = boto3.session.Session(region_name=args.region,
+                                    aws_access_key_id=args.aws_access_key,
+                                    aws_secret_access_key=args.aws_secret_key)
 ec2 = session.resource('ec2')
 ec2_client = session.client('ec2')
 
